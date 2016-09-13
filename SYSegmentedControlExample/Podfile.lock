@@ -1,0 +1,16 @@
+PODS:
+  - SYSegmentedControl (1.0)
+
+DEPENDENCIES:
+  - SYSegmentedControl (from `../`)
+
+EXTERNAL SOURCES:
+  SYSegmentedControl:
+    :path: ../
+
+SPEC CHECKSUMS:
+  SYSegmentedControl: cebdd2c8296c9cfb43f7d4492a9eb90e0ca537f5
+
+PODFILE CHECKSUM: 5d60554a70f9170ea0ea3aa65be1643e4fd9927d
+
+COCOAPODS: 1.0.1

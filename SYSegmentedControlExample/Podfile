@@ -1,0 +1,13 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+target :'SYSegmentedControlExample-tvOS' do
+	platform :tvos, '9.0'
+	pod 'SYSegmentedControl', :path => '../'
+end
+
+target :'SYSegmentedControlExample-iOS' do
+	platform :ios, '8.0'
+	pod 'SYSegmentedControl', :path => '../'
+end
+
+
