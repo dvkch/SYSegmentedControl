@@ -185,16 +185,8 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 - (void)setFont:(UIFont *)font
 {
     self->_font = font;
-    for (NSUInteger i = 0; i < self.buttons.count; ++i)
-    {
-        UIButton *button = self.buttons[i];
-        if (font)
-            [button setAttributedTitle:[[NSAttributedString alloc] initWithString:self.titles[i]
-                                                                       attributes:@{NSFontAttributeName:font}]
-                              forState:UIControlStateNormal];
-        else
-            [button setTitle:self.titles[i] forState:UIControlStateNormal];
-    }
+    for (UIButton *button in self.buttons)
+        [button.titleLabel setFont:font];
 }
 
 #pragma mark Index
