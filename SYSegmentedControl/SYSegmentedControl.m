@@ -207,7 +207,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
         return;
     }
     
-    self->_selectedIndexes = selectedIndexes;
+    self->_selectedIndexes = selectedIndexes ?: [NSIndexSet indexSet];
     
     [self updateSeparatorColors];
     
