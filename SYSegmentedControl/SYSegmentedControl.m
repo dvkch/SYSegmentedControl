@@ -105,7 +105,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
     [super setBackgroundColor:backgroundColor];
-
+    
 #if !TARGET_TV_OS
     [self updateSeparatorColors];
     for (UIButton *button in self.buttons)
@@ -223,7 +223,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 - (void)setLineWidth:(CGFloat)lineWidth
 {
     self->_lineWidth = lineWidth;
-
+    
 #if !TARGET_OS_TV
     [self.layer setBorderWidth:lineWidth];
     for (NSLayoutConstraint *constraint in self.separatorWidthConstraints)
@@ -241,7 +241,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 - (void)setEqualWidths:(BOOL)equalWidths
 {
     self->_equalWidths = equalWidths;
-
+    
     if (equalWidths)
     {
         NSMutableArray <NSLayoutConstraint *> *equalWidthsConstraints = [NSMutableArray arrayWithCapacity:self.buttons.count];
@@ -340,7 +340,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     [self.separators makeObjectsPerformSelector:@selector(removeFromSuperview)];
     
     NSMutableArray <UIButton *> *buttons = [NSMutableArray arrayWithCapacity:self.buttons.count];
-
+    
     for (NSString *title in self.titles)
     {
 #if TARGET_OS_TV
@@ -355,8 +355,12 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
         
         [button setTitle:title forState:UIControlStateNormal];
         [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+        
+#if TARGET_OS_TV
         [button addTarget:self action:@selector(buttonDidTap:) forControlEvents:UIControlEventPrimaryActionTriggered];
+#else
         [button addTarget:self action:@selector(buttonDidTap:) forControlEvents:UIControlEventTouchUpInside];
+#endif
         
         [buttons addObject:button];
         [self addSubview:button];
@@ -390,7 +394,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
                                               relatedBy:NSLayoutRelationEqual
                                                  offset:0.]];
         }
-
+        
         if (i == buttons.count - 1)
         {
             [marginConstraints addObject:
@@ -401,7 +405,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     
     self.marginConstraints = [marginConstraints copy];
     [self addConstraints:marginConstraints];
-
+    
 #if !TARGET_OS_TV
     NSMutableArray <UIView *> *separators = [NSMutableArray arrayWithCapacity:buttons.count];
     NSMutableArray <NSLayoutConstraint *> *separatorWidthConstraint = [NSMutableArray arrayWithCapacity:buttons.count];
@@ -425,7 +429,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
                                               attribute1:NSLayoutAttributeCenterX
                                               attribute2:NSLayoutAttributeLeft
                                                   offset:0]];
-
+        
         [separatorWidthConstraint addObject:
          [NSLayoutConstraint constraintWithItem:separator
                                       attribute:NSLayoutAttributeWidth
@@ -434,7 +438,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
                                       attribute:NSLayoutAttributeNotAnAttribute
                                      multiplier:1.
                                        constant:self.lineWidth]];
-
+        
         [separator addConstraint:separatorWidthConstraint.lastObject];
     }
     self.separatorWidthConstraints = [separatorWidthConstraint copy];
@@ -477,5 +481,3 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 }
 
 @end
-
-
