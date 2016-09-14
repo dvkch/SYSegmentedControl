@@ -7,29 +7,30 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		81DA5F77C5EFE32B7A4C83A4 /* libPods-SYSegmentedControlExample-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1086BA8F4340CF60C0CBC1C9 /* libPods-SYSegmentedControlExample-iOS.a */; };
+		07B4A691CFBB63F2EF5D2D06 /* libPods-SYSegmentedControlExample-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4206BE896391BA67B9129499 /* libPods-SYSegmentedControlExample-tvOS.a */; };
+		39EAD7191DD45F67460AF0CF /* libPods-SYSegmentedControlExample-iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEDACA872BC97AE119B42BA5 /* libPods-SYSegmentedControlExample-iOS.a */; };
+		97C2B83E1D88BEF700DF82D7 /* SYSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C2B83D1D88BEF700DF82D7 /* SYSegmentedControl.m */; };
+		97C2B83F1D88BEF700DF82D7 /* SYSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C2B83D1D88BEF700DF82D7 /* SYSegmentedControl.m */; };
 		97C393BF1D889306005C334D /* iOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C393BB1D889306005C334D /* iOS.storyboard */; };
 		97C393C11D889306005C334D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C393BC1D889306005C334D /* LaunchScreen.storyboard */; };
 		97C393C21D889306005C334D /* tvOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C393BD1D889306005C334D /* tvOS.storyboard */; };
-		97C393C51D88932A005C334D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C393C41D88932A005C334D /* Assets.xcassets */; };
 		97C393C61D88932A005C334D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C393C41D88932A005C334D /* Assets.xcassets */; };
 		97C393CB1D889346005C334D /* SYAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C393C81D889346005C334D /* SYAppDelegate.m */; };
 		97C393CC1D889346005C334D /* SYAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C393C81D889346005C334D /* SYAppDelegate.m */; };
 		97C393CD1D889346005C334D /* SYViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C393CA1D889346005C334D /* SYViewController.m */; };
 		97C393CE1D889346005C334D /* SYViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C393CA1D889346005C334D /* SYViewController.m */; };
-		97C393D21D88938A005C334D /* Info-iOS.plist in Resources */ = {isa = PBXBuildFile; fileRef = 97C393CF1D88938A005C334D /* Info-iOS.plist */; };
-		97C393D31D88938A005C334D /* Info-tvOS.plist in Resources */ = {isa = PBXBuildFile; fileRef = 97C393D01D88938A005C334D /* Info-tvOS.plist */; };
 		97C393D61D889392005C334D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C393D51D889392005C334D /* main.m */; };
 		97C393D71D889392005C334D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C393D51D889392005C334D /* main.m */; };
-		F4497D585378362DEEED60B0 /* libPods-SYSegmentedControlExample-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B30F34E0DBB8DF4DBC1FC02 /* libPods-SYSegmentedControlExample-tvOS.a */; };
+		97C941C11D889A71005F22A8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C393C41D88932A005C334D /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1086BA8F4340CF60C0CBC1C9 /* libPods-SYSegmentedControlExample-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SYSegmentedControlExample-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4206BE896391BA67B9129499 /* libPods-SYSegmentedControlExample-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SYSegmentedControlExample-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		47209D64A0E564213F41F372 /* Pods-SYSegmentedControlExample-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SYSegmentedControlExample-iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-SYSegmentedControlExample-iOS/Pods-SYSegmentedControlExample-iOS.release.xcconfig"; sourceTree = "<group>"; };
-		5B30F34E0DBB8DF4DBC1FC02 /* libPods-SYSegmentedControlExample-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SYSegmentedControlExample-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BB5B1C07CABEBCD9174333D /* Pods-SYSegmentedControlExample-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SYSegmentedControlExample-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SYSegmentedControlExample-tvOS/Pods-SYSegmentedControlExample-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		69A269F3533DE440F70581D2 /* Pods-SYSegmentedControlExample-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SYSegmentedControlExample-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SYSegmentedControlExample-iOS/Pods-SYSegmentedControlExample-iOS.debug.xcconfig"; sourceTree = "<group>"; };
+		97C2B83C1D88BEF700DF82D7 /* SYSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SYSegmentedControl.h; path = ../SYSegmentedControl/SYSegmentedControl.h; sourceTree = "<group>"; };
+		97C2B83D1D88BEF700DF82D7 /* SYSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SYSegmentedControl.m; path = ../SYSegmentedControl/SYSegmentedControl.m; sourceTree = "<group>"; };
 		97C3938A1D8891F7005C334D /* SYSegmentedControlExample-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SYSegmentedControlExample-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C393A21D889229005C334D /* SYSegmentedControlExample-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SYSegmentedControlExample-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C393BB1D889306005C334D /* iOS.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = iOS.storyboard; sourceTree = "<group>"; };
@@ -44,6 +45,7 @@
 		97C393D01D88938A005C334D /* Info-tvOS.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Info-tvOS.plist"; sourceTree = "<group>"; };
 		97C393D51D889392005C334D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B7DDD6B17F4B26B61D71CC40 /* Pods-SYSegmentedControlExample-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SYSegmentedControlExample-tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-SYSegmentedControlExample-tvOS/Pods-SYSegmentedControlExample-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		DEDACA872BC97AE119B42BA5 /* libPods-SYSegmentedControlExample-iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SYSegmentedControlExample-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,7 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F4497D585378362DEEED60B0 /* libPods-SYSegmentedControlExample-tvOS.a in Frameworks */,
+				07B4A691CFBB63F2EF5D2D06 /* libPods-SYSegmentedControlExample-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,7 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81DA5F77C5EFE32B7A4C83A4 /* libPods-SYSegmentedControlExample-iOS.a in Frameworks */,
+				39EAD7191DD45F67460AF0CF /* libPods-SYSegmentedControlExample-iOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +82,7 @@
 		9712C5F81D8751B3002F1C39 = {
 			isa = PBXGroup;
 			children = (
+				97C2B8401D88BF0200DF82D7 /* SYSegmentedControl */,
 				97C393B91D8892C4005C334D /* SYSegmentedControlExample */,
 				9712C6021D8751B3002F1C39 /* Products */,
 				8C7D0FD5AE4CF0F35426C620 /* Pods */,
@@ -94,6 +97,15 @@
 				97C393A21D889229005C334D /* SYSegmentedControlExample-iOS.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		97C2B8401D88BF0200DF82D7 /* SYSegmentedControl */ = {
+			isa = PBXGroup;
+			children = (
+				97C2B83C1D88BEF700DF82D7 /* SYSegmentedControl.h */,
+				97C2B83D1D88BEF700DF82D7 /* SYSegmentedControl.m */,
+			);
+			name = SYSegmentedControl;
 			sourceTree = "<group>";
 		};
 		97C393B91D8892C4005C334D /* SYSegmentedControlExample */ = {
@@ -125,8 +137,8 @@
 		BEC6B4A72F26C632AE1CF5DC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1086BA8F4340CF60C0CBC1C9 /* libPods-SYSegmentedControlExample-iOS.a */,
-				5B30F34E0DBB8DF4DBC1FC02 /* libPods-SYSegmentedControlExample-tvOS.a */,
+				DEDACA872BC97AE119B42BA5 /* libPods-SYSegmentedControlExample-iOS.a */,
+				4206BE896391BA67B9129499 /* libPods-SYSegmentedControlExample-tvOS.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -219,8 +231,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				97C393C51D88932A005C334D /* Assets.xcassets in Resources */,
-				97C393D31D88938A005C334D /* Info-tvOS.plist in Resources */,
+				97C941C11D889A71005F22A8 /* Assets.xcassets in Resources */,
 				97C393C21D889306005C334D /* tvOS.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -229,7 +240,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				97C393D21D88938A005C334D /* Info-iOS.plist in Resources */,
 				97C393BF1D889306005C334D /* iOS.storyboard in Resources */,
 				97C393C11D889306005C334D /* LaunchScreen.storyboard in Resources */,
 				97C393C61D88932A005C334D /* Assets.xcassets in Resources */,
@@ -336,6 +346,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				97C2B83E1D88BEF700DF82D7 /* SYSegmentedControl.m in Sources */,
 				97C393CD1D889346005C334D /* SYViewController.m in Sources */,
 				97C393CB1D889346005C334D /* SYAppDelegate.m in Sources */,
 				97C393D61D889392005C334D /* main.m in Sources */,
@@ -346,6 +357,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				97C2B83F1D88BEF700DF82D7 /* SYSegmentedControl.m in Sources */,
 				97C393CE1D889346005C334D /* SYViewController.m in Sources */,
 				97C393CC1D889346005C334D /* SYAppDelegate.m in Sources */,
 				97C393D71D889392005C334D /* main.m in Sources */,
@@ -373,6 +385,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -421,6 +434,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;

@@ -7,23 +7,28 @@
 //
 
 #import "SYViewController.h"
+#import "SYSegmentedControl.h"
 
 @interface SYViewController ()
-
+@property (nonatomic, weak) IBOutlet SYSegmentedControl *segmentedControl;
 @end
 
 @implementation SYViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
+    // [self playWithLineWidth];
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)playWithLineWidth
+{
+    [self.segmentedControl setLineWidth:(arc4random() % 10)];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self playWithLineWidth];
+    });
 }
-
 
 @end

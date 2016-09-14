@@ -13,36 +13,29 @@
 @protocol SYSegmentedControlDelegate <NSObject>
 
 - (void)segmentedControl:(SYSegmentedControl *)segmentedControl
-          didSelectIndex:(NSUInteger)index;
+  changedSelectedIndexes:(NSIndexSet *)selectedIndexes;
 
 @end
 
 IB_DESIGNABLE
-
-#if TARGET_OS_TV
 @interface SYSegmentedControl : UIView
-#else
-@interface SYSegmentedControl : UISegmentedControl
-#endif
 
 @property (nonatomic, weak) IBOutlet id<SYSegmentedControlDelegate> delegate;
-@property (nonatomic, strong) NSArray <NSString *> *titles;
-@property (nonatomic, strong) IBInspectable UIFont      *textFont;
+@property (nonatomic, strong)               NSArray <NSString *> *titles;
+@property (nonatomic, strong) IBInspectable UIFont      *font;
 @property (nonatomic)         IBInspectable NSString    *titlesAsString;
-@property (nonatomic)         IBInspectable NSUInteger  selectedIndex;
+@property (nonatomic, strong) IBInspectable NSIndexSet  *selectedIndexes;
 @property (nonatomic, assign) IBInspectable CGFloat     height;
+@property (nonatomic, assign) IBInspectable CGFloat     lineWidth;
+@property (nonatomic, assign) IBInspectable BOOL        equalWidths;
+@property (nonatomic, assign) IBInspectable BOOL        allowMultipleSelection;
+@property (nonatomic, assign) IBInspectable BOOL        allowNoSelection;
 
 #if TARGET_OS_TV
 @property (nonatomic, strong) IBInspectable UIColor *focusedBackgroundColor;
 @property (nonatomic, strong) IBInspectable UIColor *focusedTextColor;
 @property (nonatomic, strong) IBInspectable UIColor *selectedTextColor;
 @property (nonatomic, strong) IBInspectable UIColor *textColor;
-#else
-@property (nonatomic) IBInspectable UIColor *frontColor;
-@property (nonatomic) IBInspectable UIColor *backColor;
-
-- (void)setSelectedSegmentIndex:(NSInteger)selectedSegmentIndex NS_UNAVAILABLE;
-- (NSInteger)selectedSegmentIndex NS_UNAVAILABLE;
 #endif
 
 @end

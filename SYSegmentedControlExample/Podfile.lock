@@ -1,16 +1,12 @@
 PODS:
-  - SYSegmentedControl (1.0)
+  - SYKit (0.0.24)
 
 DEPENDENCIES:
-  - SYSegmentedControl (from `../`)
-
-EXTERNAL SOURCES:
-  SYSegmentedControl:
-    :path: ../
+  - SYKit
 
 SPEC CHECKSUMS:
-  SYSegmentedControl: cebdd2c8296c9cfb43f7d4492a9eb90e0ca537f5
+  SYKit: d1bbc9cabca550c894132cd2ca4432e707cedb7d
 
-PODFILE CHECKSUM: 5d60554a70f9170ea0ea3aa65be1643e4fd9927d
+PODFILE CHECKSUM: 9178a1259d06c500b4fd5bd08c75a4e28aca58b5
 
 COCOAPODS: 1.0.1

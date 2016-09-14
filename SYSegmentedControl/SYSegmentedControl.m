@@ -7,18 +7,55 @@
 //
 
 #import "SYSegmentedControl.h"
-#import "UIImage+SY.h"
-#import "Masonry.h"
+#import "UIImage+SYKit.h"
+
+static NSString * const SYSegmentedControlTitlesSeparator = @"|";
+
+#if TARGET_OS_TV
+static CGFloat const SYSegmentedControlMarginBetween = 20.;
+static CGFloat const SYSegmentedControlMarginInsets  = 20.;
+#else
+static CGFloat const SYSegmentedControlMarginBetween =  0.;
+static CGFloat const SYSegmentedControlMarginInsets  = 10.;
+#endif
+
+
+@interface NSLayoutConstraint (SYKit)
+
++ (instancetype)sy_equalConstraintWithItems:(NSArray *)items
+                                  attribute:(NSLayoutAttribute)attribute
+                                     offset:(CGFloat)offset;
+
++ (instancetype)sy_equalConstraintWithItems:(NSArray *)items
+                                 attribute1:(NSLayoutAttribute)attribute1
+                                 attribute2:(NSLayoutAttribute)attribute2
+                                     offset:(CGFloat)offset;
+
++ (instancetype)sy_constraintWithItems:(NSArray *)items
+                             attribute:(NSLayoutAttribute)attribute
+                             relatedBy:(NSLayoutRelation)relation
+                                offset:(CGFloat)offset;
+
++ (instancetype)sy_constraintWithItems:(NSArray *)items
+                            attribute1:(NSLayoutAttribute)attribute1
+                            attribute2:(NSLayoutAttribute)attribute2
+                             relatedBy:(NSLayoutRelation)relation
+                                offset:(CGFloat)offset;
+
+@end
 
 @interface SYSegmentedControl ()
 @property (nonatomic, strong) NSArray <UIButton *> *buttons;
+@property (nonatomic, strong) NSArray <UIView *> *separators;
+@property (nonatomic, strong) NSArray <NSLayoutConstraint *> *buttonWidthConstraints;
+@property (nonatomic, strong) NSArray <NSLayoutConstraint *> *separatorWidthConstraints;
 @end
 
 @implementation SYSegmentedControl
 
-- (instancetype)init
+- (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [super init];
+    self = [super initWithFrame:frame];
     if (self) [self customSetup];
     return self;
 }
@@ -30,14 +67,50 @@
     return self;
 }
 
-#if TARGET_OS_TV
-
 - (void)customSetup
 {
+    _lineWidth              = 1;
+    _height                 = 0;
+    _equalWidths            = YES;
+    _allowNoSelection       = NO;
+    _allowMultipleSelection = YES;
+    
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.layer.cornerRadius = 6.;
+    
+#if TARGET_OS_TV
+    [self.layer setCornerRadius:6.];
+#else
+    [self.layer setCornerRadius:4.];
+    [self.layer setBorderWidth:self.lineWidth];
+    [self.layer setBorderColor:self.tintColor.CGColor];
+    [self.layer setMasksToBounds:YES];
+#endif
 }
 
+#pragma mark - Properties
+
+#pragma mark Titles
+
+- (void)setTitles:(NSArray<NSString *> *)titles
+{
+    self->_titles = titles;
+    [self recreateButtons];
+}
+
+- (NSString *)titlesAsString
+{
+    return [self.titles componentsJoinedByString:SYSegmentedControlTitlesSeparator];
+}
+
+- (void)setTitlesAsString:(NSString *)titlesAsString
+{
+    NSArray <NSString *> *titles = [titlesAsString componentsSeparatedByString:SYSegmentedControlTitlesSeparator];
+    [self setTitles:titles];
+}
+
+#pragma mark Colors
+
+#if TARGET_OS_TV
 - (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
 {
     [coordinator addCoordinatedAnimations:^{
@@ -67,218 +140,107 @@
         [button setTitleColor:textColor forState:UIControlStateNormal];
 }
 
+- (void)setFocusedBackgroundColor:(UIColor *)focusedBackgroundColor
+{
+    self->_focusedBackgroundColor = focusedBackgroundColor;
+    for (UIButton *button in self.buttons)
+        [button setBackgroundImage:[UIImage sy_imageWithColor:focusedBackgroundColor]
+                          forState:UIControlStateFocused];
+}
+#endif
+
+- (void)setTintColor:(UIColor *)tintColor
+{
+    [super setTintColor:tintColor];
+    [self updateSeparatorColors];
+    for (UIButton *button in self.buttons)
+    {
+        [button setTitleColor:tintColor forState:UIControlStateNormal];
+        [button setBackgroundImage:[UIImage sy_imageWithColor:self.tintColor]
+                          forState:UIControlStateSelected];
+        
+        [button setBackgroundImage:[UIImage sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.2]]
+                          forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[UIImage sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.7]]
+                          forState:(UIControlStateHighlighted|UIControlStateSelected)];
+    }
+    
+    for (UIView *separator in self.separators)
+        [separator setBackgroundColor:self.tintColor];
+}
+
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
     [super setBackgroundColor:backgroundColor];
+    [self updateSeparatorColors];
     for (UIButton *button in self.buttons)
     {
-        [button setBackgroundImage:[UIImage imageWithColor:self.backgroundColor] forState:UIControlStateNormal];
-        [button setBackgroundImage:[UIImage imageWithColor:self.backgroundColor] forState:UIControlStateSelected];
-    }
-}
-
-- (void)setTitles:(NSArray<NSString *> *)titles
-{
-    CGFloat marginBetween = 20.;
-    CGFloat marginInsets  = 20.;
-    
-    self->_titles = titles;
-    [self.buttons makeObjectsPerformSelector:@selector(removeFromSuperview)];
-    
-    NSMutableArray <UIButton *> *buttons = [NSMutableArray array];
-    for (NSString *title in self.titles)
-    {
-        UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-        [button setBackgroundImage:[UIImage imageWithColor:self.focusedBackgroundColor] forState:UIControlStateFocused];
-        [button setBackgroundImage:[UIImage imageWithColor:self.backgroundColor] forState:UIControlStateNormal];
-        [button setBackgroundImage:[UIImage imageWithColor:self.backgroundColor] forState:UIControlStateSelected];
         [button setBackgroundColor:[UIColor clearColor]];
-        [button setTitleColor:self.focusedTextColor forState:UIControlStateFocused];
-        [button setTitleColor:self.selectedTextColor forState:UIControlStateSelected];
-        [button setTitleColor:self.textColor forState:UIControlStateNormal];
-        if (self.textFont)
-            [button setAttributedTitle:[[NSAttributedString alloc] initWithString:title
-                                                                       attributes:@{NSFontAttributeName:self.textFont}]
-                              forState:UIControlStateNormal];
+        [button setBackgroundImage:[UIImage sy_imageWithColor:self.backgroundColor]
+                          forState:UIControlStateNormal];
+        if (TARGET_OS_TV)
+        {
+            [button setBackgroundImage:[UIImage sy_imageWithColor:self.backgroundColor]
+                              forState:UIControlStateSelected];
+        }
         else
-            [button setTitle:title forState:UIControlStateNormal];
-        [button addTarget:self action:@selector(buttonDidTap:) forControlEvents:UIControlEventPrimaryActionTriggered];
-        [button addTarget:self action:@selector(buttonDidTap:) forControlEvents:UIControlEventTouchUpInside];
-        [button setContentEdgeInsets:UIEdgeInsetsMake(marginInsets, marginInsets, marginInsets, marginInsets)];
-        [buttons addObject:button];
-        [self addSubview:button];
+        {
+            [button setTitleColor:self.backgroundColor
+                         forState:UIControlStateSelected];
+            [button setTitleColor:self.backgroundColor
+                         forState:(UIControlStateSelected | UIControlStateHighlighted)];
+        }
     }
-    
-    for (NSUInteger i = 0; i < buttons.count; ++i)
-    {
-        UIButton *button = buttons[i];
-        [button mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(@0);
-            make.bottom.equalTo(@0);
-            if (i == 0)
-            {
-                make.left.equalTo(@0);
-            }
-            else
-            {
-                make.width.equalTo(buttons.firstObject);
-                make.left.equalTo(buttons[i-1].mas_right).offset(marginBetween);
-            }
-            if (i == buttons.count - 1)
-            {
-                make.right.equalTo(@0);
-            }
-        }];
-    }
-    
-    self.buttons = [buttons copy];
 }
 
-- (void)setButtons:(NSArray<UIButton *> *)buttons
-{
-    self->_buttons = buttons;
-    [self invalidateIntrinsicContentSize];
-}
+#pragma mark Font
 
-- (void)setSelectedIndex:(NSUInteger)selectedIndex
+- (void)setFont:(UIFont *)font
 {
+    self->_font = font;
     for (NSUInteger i = 0; i < self.buttons.count; ++i)
     {
         UIButton *button = self.buttons[i];
-        [button setSelected:(i == selectedIndex)];
-    }
-}
-
-- (NSUInteger)selectedIndex
-{
-    for (NSUInteger i = 0; i < self.buttons.count; ++i)
-    {
-        UIButton *button = self.buttons[i];
-        if (button.isSelected)
-            return i;
-    }
-    return NSNotFound;
-}
-
-- (void)setTextFont:(UIFont *)textFont
-{
-    self->_textFont = textFont;
-    for (NSUInteger i = 0; i < self.buttons.count; ++i)
-    {
-        UIButton *button = self.buttons[i];
-        if (textFont)
+        if (font)
             [button setAttributedTitle:[[NSAttributedString alloc] initWithString:self.titles[i]
-                                                                       attributes:@{NSFontAttributeName:textFont}]
+                                                                       attributes:@{NSFontAttributeName:font}]
                               forState:UIControlStateNormal];
         else
             [button setTitle:self.titles[i] forState:UIControlStateNormal];
     }
 }
 
-- (void)setFocusedBackgroundColor:(UIColor *)focusedBackgroundColor
-{
-    self->_focusedBackgroundColor = focusedBackgroundColor;
-    for (UIButton *button in self.buttons)
-        [button setBackgroundImage:[UIImage imageWithColor:focusedBackgroundColor] forState:UIControlStateFocused];
-}
+#pragma mark Index
 
-- (void)buttonDidTap:(id)sender
+- (void)setSelectedIndexes:(NSIndexSet *)selectedIndexes
 {
-    NSUInteger index = [self.buttons indexOfObject:sender];
-    if (index == self.selectedIndex)
-        return;
-    
-    [UIView animateWithDuration:.2 animations:^{
-        [self setSelectedIndex:index];
-        if ([self.delegate respondsToSelector:@selector(segmentedControl:didSelectIndex:)])
-            [self.delegate segmentedControl:self didSelectIndex:index];
-    }];
-}
-#else
-
-- (void)customSetup
-{
-    [self.layer setCornerRadius:4.];
-    [self.layer setMasksToBounds:YES];
-    [self addTarget:self action:@selector(segmentDidChange:) forControlEvents:UIControlEventValueChanged];
-}
-
-- (void)setFrontColor:(UIColor *)frontColor
-{
-    [self setTintColor:frontColor];
-}
-
-- (UIColor *)frontColor
-{
-    return self.tintColor;
-}
-
-- (void)setBackColor:(UIColor *)backColor
-{
-    [self setBackgroundColor:backColor];
-    [self update];
-}
-
-- (UIColor *)backColor
-{
-    return self.backgroundColor;
-}
-
-- (void)setTextFont:(UIFont *)textFont
-{
-    self->_textFont = textFont;
-    [self update];
-}
-
-- (void)update
-{
-    // BACKGROUND
-    [self.layer setCornerRadius:4.];
-    [self.layer setMasksToBounds:YES];
-    
-    // FONT
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-    [attributes addEntriesFromDictionary:[self titleTextAttributesForState:UIControlStateNormal]];
-    if (self.textFont) {
-        [attributes setObject:self.textFont forKey:NSFontAttributeName];
-    }
-    [self setTitleTextAttributes:attributes forState:UIControlStateNormal];
-}
-
-- (void)setTitles:(NSArray<NSString *> *)titles
-{
-    self->_titles = titles;
-    while ([self numberOfSegments])
-        [self removeSegmentAtIndex:0 animated:NO];
-    
-    for (NSUInteger i = 0; i < titles.count; ++i)
+    if (!self.allowMultipleSelection && selectedIndexes.count > 1)
     {
-        NSString *title = titles[i];
-        [self insertSegmentWithTitle:title atIndex:i animated:NO];
+        [self setSelectedIndexes:[NSIndexSet indexSetWithIndex:selectedIndexes.firstIndex]];
+        return;
+    }
+    
+    self->_selectedIndexes = selectedIndexes;
+    
+    [self updateSeparatorColors];
+    
+    for (NSUInteger i = 0; i < self.buttons.count; ++i)
+    {
+        UIButton *button = self.buttons[i];
+        [button setSelected:[selectedIndexes containsIndex:i]];
     }
 }
 
-- (void)setSelectedIndex:(NSUInteger)selectedIndex
-{
-    [super setSelectedSegmentIndex:selectedIndex];
-}
+#pragma mark - Metrics
 
-- (NSUInteger)selectedIndex
+- (void)setLineWidth:(CGFloat)lineWidth
 {
-    if (super.selectedSegmentIndex == UISegmentedControlNoSegment)
-        return NSNotFound;
-    return super.selectedSegmentIndex;
+    self->_lineWidth = lineWidth;
+    
+    [self.layer setBorderWidth:lineWidth];
+    for (NSLayoutConstraint *constraint in self.separatorWidthConstraints)
+        [constraint setConstant:lineWidth];
 }
-
-- (void)segmentDidChange:(id)sender
-{
-    [UIView animateWithDuration:.2 animations:^{
-        if ([self.delegate respondsToSelector:@selector(segmentedControl:didSelectIndex:)])
-            [self.delegate segmentedControl:self didSelectIndex:super.selectedSegmentIndex];
-    }];
-}
-
-#endif
 
 - (void)setHeight:(CGFloat)height
 {
@@ -286,22 +248,269 @@
     [self invalidateIntrinsicContentSize];
 }
 
+- (void)setEqualWidths:(BOOL)equalWidths
+{
+    self->_equalWidths = equalWidths;
+
+    if (equalWidths)
+    {
+        NSMutableArray <NSLayoutConstraint *> *equalWidthsConstraints = [NSMutableArray arrayWithCapacity:self.buttons.count];
+        for (NSUInteger i = 1; i < self.buttons.count; ++i)
+        {
+            [equalWidthsConstraints addObject:
+             [NSLayoutConstraint sy_equalConstraintWithItems:@[self.buttons[i], self.buttons.firstObject]
+                                                   attribute:NSLayoutAttributeWidth
+                                                      offset:0]];
+        }
+        
+        [self addConstraints:equalWidthsConstraints];
+        self.buttonWidthConstraints = [equalWidthsConstraints copy];
+    }
+    else
+    {
+        [self removeConstraints:self.buttonWidthConstraints];
+        self.buttonWidthConstraints = @[];
+    }
+    
+    [self invalidateIntrinsicContentSize];
+}
+
 - (CGSize)intrinsicContentSize
 {
-    if (self.height >= 1.)
-        return CGSizeMake([super intrinsicContentSize].width, self.height);
-    return [super intrinsicContentSize];
+    CGSize size = [super intrinsicContentSize];
+    return CGSizeMake(size.width, (self.height >= 1. ? self.height : size.height));
 }
 
-- (void)setTitlesAsString:(NSString *)titlesAsString
+#pragma mark - Actions
+
+- (void)buttonDidTap:(UIButton *)sender
 {
-    NSArray <NSString *> *titles = [titlesAsString componentsSeparatedByString:@"|"];
-    [self setTitles:titles];
+    NSUInteger index = [self.buttons indexOfObject:sender];
+    
+    NSMutableIndexSet *indexSet = [self.selectedIndexes mutableCopy] ?: [NSMutableIndexSet indexSet];
+    
+    // unselecting item
+    if ([self.selectedIndexes containsIndex:index])
+    {
+        if (self.selectedIndexes.count > 1 || (self.selectedIndexes.count == 1 && self.allowNoSelection))
+            [indexSet removeIndex:index];
+    }
+    // selecting item
+    else
+    {
+        if (self.allowMultipleSelection)
+            [indexSet addIndex:index];
+        else
+            indexSet = [NSMutableIndexSet indexSetWithIndex:index];
+    }
+    
+    if ([indexSet isEqualToIndexSet:self.selectedIndexes])
+        return;
+    
+    [self setSelectedIndexes:[indexSet copy]];
+    if ([self.delegate respondsToSelector:@selector(segmentedControl:changedSelectedIndexes:)])
+        [self.delegate segmentedControl:self changedSelectedIndexes:indexSet];
 }
 
-- (NSString *)titlesAsString
+#pragma mark - Private
+
+- (void)recreateButtons
 {
-    return [self.titles componentsJoinedByString:@"|"];
+    self.selectedIndexes = nil;
+    [self.buttons    makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    [self.separators makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    
+    NSMutableArray <UIButton *> *buttons = [NSMutableArray arrayWithCapacity:self.buttons.count];
+
+    for (NSString *title in self.titles)
+    {
+#if TARGET_OS_TV
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+#else
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+#endif
+        [button setTitle:title forState:UIControlStateNormal];
+        [button setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [button addTarget:self action:@selector(buttonDidTap:) forControlEvents:UIControlEventPrimaryActionTriggered];
+        [button addTarget:self action:@selector(buttonDidTap:) forControlEvents:UIControlEventTouchUpInside];
+        [button setContentEdgeInsets:UIEdgeInsetsMake(SYSegmentedControlMarginInsets,
+                                                      SYSegmentedControlMarginInsets,
+                                                      SYSegmentedControlMarginInsets,
+                                                      SYSegmentedControlMarginInsets)];
+        [button setBackgroundColor:[UIColor grayColor]];
+        [buttons addObject:button];
+        [self addSubview:button];
+    }
+    
+    for (NSUInteger i = 0; i < buttons.count; ++i)
+    {
+        UIButton *button = buttons[i];
+        
+        [self addConstraint:
+         [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
+                                               attribute:NSLayoutAttributeTop
+                                                  offset:0.]];
+        
+        [self addConstraint:
+         [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
+                                               attribute:NSLayoutAttributeBottom
+                                                  offset:0.]];
+        
+        if (i == 0)
+        {
+            [self addConstraint:
+             [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
+                                                   attribute:NSLayoutAttributeLeft
+                                                      offset:SYSegmentedControlMarginBetween]];
+        }
+        else
+        {
+            [self addConstraint:
+             [NSLayoutConstraint sy_constraintWithItems:@[buttons[i-1], button]
+                                             attribute1:NSLayoutAttributeRight
+                                             attribute2:NSLayoutAttributeLeft
+                                              relatedBy:NSLayoutRelationEqual
+                                                 offset:-SYSegmentedControlMarginBetween]];
+        }
+
+        if (i == buttons.count - 1)
+        {
+            [self addConstraint:
+             [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
+                                                   attribute:NSLayoutAttributeRight
+                                                      offset:-SYSegmentedControlMarginBetween]];
+        }
+    }
+
+#if !TARGET_OS_TV
+    NSMutableArray <UIView *> *separators = [NSMutableArray arrayWithCapacity:buttons.count];
+    NSMutableArray <NSLayoutConstraint *> *separatorWidthConstraint = [NSMutableArray arrayWithCapacity:buttons.count];
+    
+    for (NSUInteger i = 1; i < buttons.count; ++i)
+    {
+        UIView *separator = [[UIView alloc] init];
+        [separator setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [separators addObject:separator];
+        
+        [self addSubview:separator];
+        
+        [self addConstraint:
+         [NSLayoutConstraint sy_equalConstraintWithItems:@[separator, self]
+                                               attribute:NSLayoutAttributeTop
+                                                  offset:0]];
+        [self addConstraint:
+         [NSLayoutConstraint sy_equalConstraintWithItems:@[separator, self]
+                                               attribute:NSLayoutAttributeBottom
+                                                  offset:0]];
+        [self addConstraint:
+         [NSLayoutConstraint sy_equalConstraintWithItems:@[separator, buttons[i]]
+                                              attribute1:NSLayoutAttributeCenterX
+                                              attribute2:NSLayoutAttributeLeft
+                                                  offset:0]];
+
+        [separatorWidthConstraint addObject:
+         [NSLayoutConstraint constraintWithItem:separator
+                                      attribute:NSLayoutAttributeWidth
+                                      relatedBy:NSLayoutRelationEqual
+                                         toItem:nil
+                                      attribute:NSLayoutAttributeNotAnAttribute
+                                     multiplier:1.
+                                       constant:self.lineWidth]];
+
+        [separator addConstraint:separatorWidthConstraint.lastObject];
+    }
+    self.separatorWidthConstraints = [separatorWidthConstraint copy];
+    self.separators = [separators copy];
+#endif
+    
+    self.buttons = [buttons copy];
+}
+
+- (void)setButtons:(NSArray<UIButton *> *)buttons
+{
+    self->_buttons = buttons;
+    
+    [self setTintColor:self.tintColor];
+    [self setBackgroundColor:self.backgroundColor];
+    [self setFont:self.font];
+    [self setEqualWidths:self.equalWidths];
+    
+#if TARGET_OS_TV
+    [self setFocusedBackgroundColor:self.focusedBackgroundColor];
+    [self setFocusedTextColor:self.focusedTextColor];
+    [self setSelectedTextColor:self.selectedTextColor];
+    [self setTextColor:self.textColor];
+#endif
+    
+    [self invalidateIntrinsicContentSize];
+}
+
+- (void)updateSeparatorColors
+{
+    for (NSUInteger i = 0; i < self.separators.count; ++i)
+    {
+        if ([self.selectedIndexes containsIndex:i] && [self.selectedIndexes containsIndex:i+1])
+            [self.separators[i] setBackgroundColor:self.backgroundColor];
+        else
+            [self.separators[i] setBackgroundColor:self.tintColor];
+    }
 }
 
 @end
+
+@implementation NSLayoutConstraint (SYKit)
+
++ (instancetype)sy_equalConstraintWithItems:(NSArray *)items
+                                  attribute:(NSLayoutAttribute)attribute
+                                     offset:(CGFloat)offset
+{
+    return [self sy_constraintWithItems:items
+                             attribute1:attribute
+                             attribute2:attribute
+                              relatedBy:NSLayoutRelationEqual
+                                 offset:offset];
+}
+
++ (instancetype)sy_equalConstraintWithItems:(NSArray *)items
+                                 attribute1:(NSLayoutAttribute)attribute1
+                                 attribute2:(NSLayoutAttribute)attribute2
+                                     offset:(CGFloat)offset
+{
+    return [self sy_constraintWithItems:items
+                             attribute1:attribute1
+                             attribute2:attribute2
+                              relatedBy:NSLayoutRelationEqual
+                                 offset:offset];
+}
+
++ (instancetype)sy_constraintWithItems:(NSArray *)items
+                             attribute:(NSLayoutAttribute)attribute
+                             relatedBy:(NSLayoutRelation)relation
+                                offset:(CGFloat)offset
+{
+    return [self sy_constraintWithItems:items
+                             attribute1:attribute
+                             attribute2:attribute
+                              relatedBy:relation
+                                 offset:offset];
+}
+
++ (instancetype)sy_constraintWithItems:(NSArray *)items
+                            attribute1:(NSLayoutAttribute)attribute1
+                            attribute2:(NSLayoutAttribute)attribute2
+                             relatedBy:(NSLayoutRelation)relation
+                                offset:(CGFloat)offset
+{
+    NSAssert(items.count == 2, @"Two items needed to create this constraint");
+    
+    return [self constraintWithItem:items.firstObject
+                          attribute:attribute1
+                          relatedBy:relation
+                             toItem:items.lastObject
+                          attribute:attribute2
+                         multiplier:1
+                           constant:offset];
+}
+
+@end
+
