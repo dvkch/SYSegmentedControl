@@ -1,13 +1,15 @@
 //
 //  SYSegmentedControl.m
-//  Wild
+//  SYSegmentedControl
 //
-//  Created by Stan Chevallier on 10/11/2015.
-//  Copyright © 2015 Syan. All rights reserved.
+//  Created by Stan Chevallier on 10/09/2016.
+//  Copyright © 2016 Syan. All rights reserved.
 //
 
 #import "SYSegmentedControl.h"
 #import "UIImage+SYKit.h"
+#import "UIView+SYKit.h"
+#import "NSLayoutConstraint+SYKit.h"
 
 static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 
@@ -18,31 +20,6 @@ static CGFloat const SYSegmentedControlMarginInsets  = 20.;
 static CGFloat const SYSegmentedControlMarginBetween =  0.;
 static CGFloat const SYSegmentedControlMarginInsets  = 10.;
 #endif
-
-
-@interface NSLayoutConstraint (SYKit)
-
-+ (instancetype)sy_equalConstraintWithItems:(NSArray *)items
-                                  attribute:(NSLayoutAttribute)attribute
-                                     offset:(CGFloat)offset;
-
-+ (instancetype)sy_equalConstraintWithItems:(NSArray *)items
-                                 attribute1:(NSLayoutAttribute)attribute1
-                                 attribute2:(NSLayoutAttribute)attribute2
-                                     offset:(CGFloat)offset;
-
-+ (instancetype)sy_constraintWithItems:(NSArray *)items
-                             attribute:(NSLayoutAttribute)attribute
-                             relatedBy:(NSLayoutRelation)relation
-                                offset:(CGFloat)offset;
-
-+ (instancetype)sy_constraintWithItems:(NSArray *)items
-                            attribute1:(NSLayoutAttribute)attribute1
-                            attribute2:(NSLayoutAttribute)attribute2
-                             relatedBy:(NSLayoutRelation)relation
-                                offset:(CGFloat)offset;
-
-@end
 
 @interface SYSegmentedControl ()
 @property (nonatomic, strong) NSArray <UIButton *> *buttons;
@@ -110,55 +87,16 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
 
 #pragma mark Colors
 
-#if TARGET_OS_TV
-- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
-{
-    [coordinator addCoordinatedAnimations:^{
-        if ([self.buttons containsObject:(id)context.nextFocusedView])
-            [self bringSubviewToFront:context.nextFocusedView];
-    } completion:nil];
-}
-
-- (void)setFocusedTextColor:(UIColor *)focusedTextColor
-{
-    self->_focusedTextColor = focusedTextColor;
-    for (UIButton *button in self.buttons)
-        [button setTitleColor:focusedTextColor forState:UIControlStateFocused];
-}
-
-- (void)setSelectedTextColor:(UIColor *)selectedTextColor
-{
-    self->_selectedTextColor = selectedTextColor;
-    for (UIButton *button in self.buttons)
-        [button setTitleColor:selectedTextColor forState:UIControlStateSelected];
-}
-
-- (void)setTextColor:(UIColor *)textColor
-{
-    self->_textColor = textColor;
-    for (UIButton *button in self.buttons)
-        [button setTitleColor:textColor forState:UIControlStateNormal];
-}
-
-- (void)setFocusedBackgroundColor:(UIColor *)focusedBackgroundColor
-{
-    self->_focusedBackgroundColor = focusedBackgroundColor;
-    for (UIButton *button in self.buttons)
-        [button setBackgroundImage:[UIImage sy_imageWithColor:focusedBackgroundColor]
-                          forState:UIControlStateFocused];
-}
-#endif
-
 - (void)setTintColor:(UIColor *)tintColor
 {
     [super setTintColor:tintColor];
+#if !TARGET_TV_OS
     [self updateSeparatorColors];
     for (UIButton *button in self.buttons)
     {
         [button setTitleColor:tintColor forState:UIControlStateNormal];
         [button setBackgroundImage:[UIImage sy_imageWithColor:self.tintColor]
                           forState:UIControlStateSelected];
-        
         [button setBackgroundImage:[UIImage sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.2]]
                           forState:UIControlStateHighlighted];
         [button setBackgroundImage:[UIImage sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.7]]
@@ -167,31 +105,86 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
     
     for (UIView *separator in self.separators)
         [separator setBackgroundColor:self.tintColor];
+#endif
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
     [super setBackgroundColor:backgroundColor];
+
+#if !TARGET_TV_OS
     [self updateSeparatorColors];
     for (UIButton *button in self.buttons)
     {
-        [button setBackgroundColor:[UIColor clearColor]];
         [button setBackgroundImage:[UIImage sy_imageWithColor:self.backgroundColor]
                           forState:UIControlStateNormal];
-        if (TARGET_OS_TV)
-        {
-            [button setBackgroundImage:[UIImage sy_imageWithColor:self.backgroundColor]
-                              forState:UIControlStateSelected];
-        }
-        else
-        {
-            [button setTitleColor:self.backgroundColor
-                         forState:UIControlStateSelected];
-            [button setTitleColor:self.backgroundColor
-                         forState:(UIControlStateSelected | UIControlStateHighlighted)];
-        }
+        
+        [button setTitleColor:self.backgroundColor
+                     forState:UIControlStateSelected];
+        [button setTitleColor:self.backgroundColor
+                     forState:(UIControlStateSelected | UIControlStateHighlighted)];
+    }
+#endif
+}
+
+#if TARGET_OS_TV
+- (void)setTextColor:(UIColor *)textColor
+{
+    self->_textColor = textColor;
+    for (UIButton *button in self.buttons)
+        [button setTitleColor:textColor
+                     forState:UIControlStateNormal];
+}
+
+- (void)setFocusedTextColor:(UIColor *)focusedTextColor
+{
+    self->_focusedTextColor = focusedTextColor;
+    for (UIButton *button in self.buttons)
+    {
+        [button setTitleColor:focusedTextColor
+                     forState:UIControlStateFocused];
+        [button setTitleColor:focusedTextColor
+                     forState:(UIControlStateFocused|UIControlStateSelected|UIControlStateHighlighted)];
     }
 }
+
+- (void)setFocusedBackgroundColor:(UIColor *)focusedBackgroundColor
+{
+    self->_focusedBackgroundColor = focusedBackgroundColor;
+    for (UIButton *button in self.buttons)
+    {
+        [button setBackgroundImage:[UIImage sy_imageWithColor:focusedBackgroundColor]
+                          forState:UIControlStateFocused];
+        [button setBackgroundImage:[UIImage sy_imageWithColor:focusedBackgroundColor]
+                          forState:(UIControlStateFocused|UIControlStateSelected|UIControlStateHighlighted)];
+    }
+}
+
+- (void)setSelectedTextColor:(UIColor *)selectedTextColor
+{
+    self->_selectedTextColor = selectedTextColor;
+    for (UIButton *button in self.buttons)
+    {
+        [button setTitleColor:selectedTextColor
+                     forState:UIControlStateSelected];
+        [button setTitleColor:selectedTextColor
+                     forState:(UIControlStateSelected|UIControlStateFocused)];
+    }
+}
+
+- (void)setSelectedBackgroundColor:(UIColor *)selectedBackgroundColor
+{
+    self->_selectedBackgroundColor = selectedBackgroundColor;
+    for (UIButton *button in self.buttons)
+    {
+        [button setBackgroundImage:[UIImage sy_imageWithColor:selectedBackgroundColor]
+                          forState:UIControlStateSelected];
+        [button setBackgroundImage:[UIImage sy_imageWithColor:selectedBackgroundColor]
+                          forState:(UIControlStateSelected|UIControlStateFocused)];
+    }
+}
+#endif
+
 
 #pragma mark Font
 
@@ -231,15 +224,18 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
     }
 }
 
-#pragma mark - Metrics
+#pragma mark Metrics
 
 - (void)setLineWidth:(CGFloat)lineWidth
 {
     self->_lineWidth = lineWidth;
-    
+
+#if !TARGET_OS_TV
     [self.layer setBorderWidth:lineWidth];
     for (NSLayoutConstraint *constraint in self.separatorWidthConstraints)
         [constraint setConstant:lineWidth];
+#endif
+    
 }
 
 - (void)setHeight:(CGFloat)height
@@ -259,8 +255,7 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
         {
             [equalWidthsConstraints addObject:
              [NSLayoutConstraint sy_equalConstraintWithItems:@[self.buttons[i], self.buttons.firstObject]
-                                                   attribute:NSLayoutAttributeWidth
-                                                      offset:0]];
+                                                   attribute:NSLayoutAttributeWidth]];
         }
         
         [self addConstraints:equalWidthsConstraints];
@@ -275,6 +270,8 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
     [self invalidateIntrinsicContentSize];
 }
 
+#pragma mark - Layout
+
 - (CGSize)intrinsicContentSize
 {
     CGSize size = [super intrinsicContentSize];
@@ -282,6 +279,14 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
 }
 
 #pragma mark - Actions
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+    [coordinator addCoordinatedAnimations:^{
+        if ([self.buttons containsObject:(id)context.nextFocusedView])
+            [self bringSubviewToFront:context.nextFocusedView];
+    } completion:nil];
+}
 
 - (void)buttonDidTap:(UIButton *)sender
 {
@@ -329,6 +334,11 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
 #else
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
 #endif
+        
+        // removes default blur background on tvOS
+        [[button sy_findSubviewsOfClass:[UIVisualEffectView class] recursive:YES]
+         makeObjectsPerformSelector:@selector(removeFromSuperview)];
+        
         [button setTitle:title forState:UIControlStateNormal];
         [button setTranslatesAutoresizingMaskIntoConstraints:NO];
         [button addTarget:self action:@selector(buttonDidTap:) forControlEvents:UIControlEventPrimaryActionTriggered];
@@ -337,7 +347,6 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
                                                       SYSegmentedControlMarginInsets,
                                                       SYSegmentedControlMarginInsets,
                                                       SYSegmentedControlMarginInsets)];
-        [button setBackgroundColor:[UIColor grayColor]];
         [buttons addObject:button];
         [self addSubview:button];
     }
@@ -348,13 +357,11 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
         
         [self addConstraint:
          [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
-                                               attribute:NSLayoutAttributeTop
-                                                  offset:0.]];
+                                               attribute:NSLayoutAttributeTop]];
         
         [self addConstraint:
          [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
-                                               attribute:NSLayoutAttributeBottom
-                                                  offset:0.]];
+                                               attribute:NSLayoutAttributeBottom]];
         
         if (i == 0)
         {
@@ -396,17 +403,14 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
         
         [self addConstraint:
          [NSLayoutConstraint sy_equalConstraintWithItems:@[separator, self]
-                                               attribute:NSLayoutAttributeTop
-                                                  offset:0]];
+                                               attribute:NSLayoutAttributeTop]];
         [self addConstraint:
          [NSLayoutConstraint sy_equalConstraintWithItems:@[separator, self]
-                                               attribute:NSLayoutAttributeBottom
-                                                  offset:0]];
+                                               attribute:NSLayoutAttributeBottom]];
         [self addConstraint:
          [NSLayoutConstraint sy_equalConstraintWithItems:@[separator, buttons[i]]
                                               attribute1:NSLayoutAttributeCenterX
-                                              attribute2:NSLayoutAttributeLeft
-                                                  offset:0]];
+                                              attribute2:NSLayoutAttributeLeft]];
 
         [separatorWidthConstraint addObject:
          [NSLayoutConstraint constraintWithItem:separator
@@ -436,10 +440,11 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
     [self setEqualWidths:self.equalWidths];
     
 #if TARGET_OS_TV
-    [self setFocusedBackgroundColor:self.focusedBackgroundColor];
-    [self setFocusedTextColor:self.focusedTextColor];
-    [self setSelectedTextColor:self.selectedTextColor];
     [self setTextColor:self.textColor];
+    [self setFocusedTextColor:self.focusedTextColor];
+    [self setFocusedBackgroundColor:self.focusedBackgroundColor];
+    [self setSelectedTextColor:self.selectedTextColor];
+    [self setSelectedBackgroundColor:self.selectedBackgroundColor];
 #endif
     
     [self invalidateIntrinsicContentSize];
@@ -458,59 +463,4 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
 
 @end
 
-@implementation NSLayoutConstraint (SYKit)
-
-+ (instancetype)sy_equalConstraintWithItems:(NSArray *)items
-                                  attribute:(NSLayoutAttribute)attribute
-                                     offset:(CGFloat)offset
-{
-    return [self sy_constraintWithItems:items
-                             attribute1:attribute
-                             attribute2:attribute
-                              relatedBy:NSLayoutRelationEqual
-                                 offset:offset];
-}
-
-+ (instancetype)sy_equalConstraintWithItems:(NSArray *)items
-                                 attribute1:(NSLayoutAttribute)attribute1
-                                 attribute2:(NSLayoutAttribute)attribute2
-                                     offset:(CGFloat)offset
-{
-    return [self sy_constraintWithItems:items
-                             attribute1:attribute1
-                             attribute2:attribute2
-                              relatedBy:NSLayoutRelationEqual
-                                 offset:offset];
-}
-
-+ (instancetype)sy_constraintWithItems:(NSArray *)items
-                             attribute:(NSLayoutAttribute)attribute
-                             relatedBy:(NSLayoutRelation)relation
-                                offset:(CGFloat)offset
-{
-    return [self sy_constraintWithItems:items
-                             attribute1:attribute
-                             attribute2:attribute
-                              relatedBy:relation
-                                 offset:offset];
-}
-
-+ (instancetype)sy_constraintWithItems:(NSArray *)items
-                            attribute1:(NSLayoutAttribute)attribute1
-                            attribute2:(NSLayoutAttribute)attribute2
-                             relatedBy:(NSLayoutRelation)relation
-                                offset:(CGFloat)offset
-{
-    NSAssert(items.count == 2, @"Two items needed to create this constraint");
-    
-    return [self constraintWithItem:items.firstObject
-                          attribute:attribute1
-                          relatedBy:relation
-                             toItem:items.lastObject
-                          attribute:attribute2
-                         multiplier:1
-                           constant:offset];
-}
-
-@end
 
