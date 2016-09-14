@@ -27,6 +27,7 @@ IB_DESIGNABLE
 @property (nonatomic, strong) IBInspectable NSIndexSet  *selectedIndexes;
 @property (nonatomic, assign) IBInspectable CGFloat     height;
 @property (nonatomic, assign) IBInspectable CGFloat     lineWidth;
+@property (nonatomic, assign) IBInspectable CGFloat     margin;
 @property (nonatomic, assign) IBInspectable BOOL        equalWidths;
 @property (nonatomic, assign) IBInspectable BOOL        allowMultipleSelection;
 @property (nonatomic, assign) IBInspectable BOOL        allowNoSelection;

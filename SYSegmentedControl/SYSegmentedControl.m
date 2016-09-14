@@ -13,19 +13,12 @@
 
 static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 
-#if TARGET_OS_TV
-static CGFloat const SYSegmentedControlMarginBetween = 20.;
-static CGFloat const SYSegmentedControlMarginInsets  = 20.;
-#else
-static CGFloat const SYSegmentedControlMarginBetween =  0.;
-static CGFloat const SYSegmentedControlMarginInsets  = 10.;
-#endif
-
 @interface SYSegmentedControl ()
 @property (nonatomic, strong) NSArray <UIButton *> *buttons;
 @property (nonatomic, strong) NSArray <UIView *> *separators;
 @property (nonatomic, strong) NSArray <NSLayoutConstraint *> *buttonWidthConstraints;
 @property (nonatomic, strong) NSArray <NSLayoutConstraint *> *separatorWidthConstraints;
+@property (nonatomic, strong) NSArray <NSLayoutConstraint *> *marginConstraints;
 @end
 
 @implementation SYSegmentedControl
@@ -51,6 +44,7 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
     _equalWidths            = YES;
     _allowNoSelection       = NO;
     _allowMultipleSelection = YES;
+    _margin                 = (TARGET_OS_TV ? 20. : 10);
     
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
     
@@ -270,6 +264,26 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
     [self invalidateIntrinsicContentSize];
 }
 
+- (void)setMargin:(CGFloat)margin
+{
+    self->_margin = margin;
+    [self updateButtonInsetsAndMargin];
+}
+
+- (void)updateButtonInsetsAndMargin
+{
+    CGFloat insets = (TARGET_OS_TV ? 20. : self.margin);
+    CGFloat margin = (TARGET_OS_TV ? self.margin : 0.);
+    
+    for (UIButton *button in self.buttons)
+        [button setContentEdgeInsets:UIEdgeInsetsMake(insets, insets, insets, insets)];
+    
+    for (NSLayoutConstraint *constraint in self.marginConstraints)
+        [constraint setConstant:margin];
+    
+    [self invalidateIntrinsicContentSize];
+}
+
 #pragma mark - Layout
 
 - (CGSize)intrinsicContentSize
@@ -343,14 +357,12 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
         [button setTranslatesAutoresizingMaskIntoConstraints:NO];
         [button addTarget:self action:@selector(buttonDidTap:) forControlEvents:UIControlEventPrimaryActionTriggered];
         [button addTarget:self action:@selector(buttonDidTap:) forControlEvents:UIControlEventTouchUpInside];
-        [button setContentEdgeInsets:UIEdgeInsetsMake(SYSegmentedControlMarginInsets,
-                                                      SYSegmentedControlMarginInsets,
-                                                      SYSegmentedControlMarginInsets,
-                                                      SYSegmentedControlMarginInsets)];
+        
         [buttons addObject:button];
         [self addSubview:button];
     }
     
+    NSMutableArray <NSLayoutConstraint *> *marginConstraints = [NSMutableArray arrayWithCapacity:buttons.count+1];
     for (NSUInteger i = 0; i < buttons.count; ++i)
     {
         UIButton *button = buttons[i];
@@ -365,29 +377,30 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
         
         if (i == 0)
         {
-            [self addConstraint:
+            [marginConstraints addObject:
              [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
-                                                   attribute:NSLayoutAttributeLeft
-                                                      offset:SYSegmentedControlMarginBetween]];
+                                                   attribute:NSLayoutAttributeLeft]];
         }
         else
         {
-            [self addConstraint:
-             [NSLayoutConstraint sy_constraintWithItems:@[buttons[i-1], button]
-                                             attribute1:NSLayoutAttributeRight
-                                             attribute2:NSLayoutAttributeLeft
+            [marginConstraints addObject:
+             [NSLayoutConstraint sy_constraintWithItems:@[button, buttons[i-1]]
+                                             attribute1:NSLayoutAttributeLeft
+                                             attribute2:NSLayoutAttributeRight
                                               relatedBy:NSLayoutRelationEqual
-                                                 offset:-SYSegmentedControlMarginBetween]];
+                                                 offset:0.]];
         }
 
         if (i == buttons.count - 1)
         {
-            [self addConstraint:
-             [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
-                                                   attribute:NSLayoutAttributeRight
-                                                      offset:-SYSegmentedControlMarginBetween]];
+            [marginConstraints addObject:
+             [NSLayoutConstraint sy_equalConstraintWithItems:@[self, button]
+                                                   attribute:NSLayoutAttributeRight]];
         }
     }
+    
+    self.marginConstraints = [marginConstraints copy];
+    [self addConstraints:marginConstraints];
 
 #if !TARGET_OS_TV
     NSMutableArray <UIView *> *separators = [NSMutableArray arrayWithCapacity:buttons.count];
@@ -439,6 +452,7 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
     [self setBackgroundColor:self.backgroundColor];
     [self setFont:self.font];
     [self setEqualWidths:self.equalWidths];
+    [self updateButtonInsetsAndMargin];
     
 #if TARGET_OS_TV
     [self setTextColor:self.textColor];
