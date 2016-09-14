@@ -410,7 +410,8 @@ static CGFloat const SYSegmentedControlMarginInsets  = 10.;
         [self addConstraint:
          [NSLayoutConstraint sy_equalConstraintWithItems:@[separator, buttons[i]]
                                               attribute1:NSLayoutAttributeCenterX
-                                              attribute2:NSLayoutAttributeLeft]];
+                                              attribute2:NSLayoutAttributeLeft
+                                                  offset:0]];
 
         [separatorWidthConstraint addObject:
          [NSLayoutConstraint constraintWithItem:separator
