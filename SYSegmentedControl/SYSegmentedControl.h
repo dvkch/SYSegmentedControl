@@ -22,8 +22,10 @@ IB_DESIGNABLE
 
 @property (nonatomic, weak) IBOutlet id<SYSegmentedControlDelegate> delegate;
 @property (nonatomic, strong)               NSArray <NSString *> *titles;
-@property (nonatomic, strong) IBInspectable UIFont      *font;
+@property (nonatomic)                       NSArray <NSString *> *selectedTitles;
 @property (nonatomic)         IBInspectable NSString    *titlesAsString;
+@property (nonatomic)         IBInspectable NSString    *selectedTitlesAsString;
+@property (nonatomic, strong) IBInspectable UIFont      *font;
 @property (nonatomic, strong) IBInspectable NSIndexSet  *selectedIndexes;
 @property (nonatomic, assign) IBInspectable CGFloat     height;
 @property (nonatomic, assign) IBInspectable CGFloat     lineWidth;
@@ -31,8 +33,6 @@ IB_DESIGNABLE
 @property (nonatomic, assign) IBInspectable BOOL        equalWidths;
 @property (nonatomic, assign) IBInspectable BOOL        allowMultipleSelection;
 @property (nonatomic, assign) IBInspectable BOOL        allowNoSelection;
-
-- (NSArray <NSString *> *)selectedTitles;
 
 #if TARGET_OS_TV
 @property (nonatomic, strong) IBInspectable UIColor *textColor;

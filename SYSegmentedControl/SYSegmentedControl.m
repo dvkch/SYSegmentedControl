@@ -215,6 +215,23 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     return [self.titles objectsAtIndexes:self.selectedIndexes];
 }
 
+- (void)setSelectedTitles:(NSArray<NSString *> *)selectedTitles
+{
+    [self setSelectedIndexes:[self.titles indexesOfObjectsPassingTest:^BOOL(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        return [selectedTitles containsObject:obj];
+    }]];
+}
+
+- (NSString *)selectedTitlesAsString
+{
+    return [self.selectedTitles componentsJoinedByString:SYSegmentedControlTitlesSeparator];
+}
+
+- (void)setSelectedTitlesAsString:(NSString *)selectedTitlesAsString
+{
+    [self setSelectedTitles:[selectedTitlesAsString componentsSeparatedByString:SYSegmentedControlTitlesSeparator]];
+}
+
 #pragma mark Metrics
 
 - (void)setLineWidth:(CGFloat)lineWidth
