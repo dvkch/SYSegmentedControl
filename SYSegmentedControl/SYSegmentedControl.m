@@ -210,6 +210,11 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     }
 }
 
+- (NSArray <NSString *> *)selectedTitles
+{
+    return [self.titles objectsAtIndexes:self.selectedIndexes];
+}
+
 #pragma mark Metrics
 
 - (void)setLineWidth:(CGFloat)lineWidth

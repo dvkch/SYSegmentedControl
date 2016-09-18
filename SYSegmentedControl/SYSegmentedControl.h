@@ -32,6 +32,8 @@ IB_DESIGNABLE
 @property (nonatomic, assign) IBInspectable BOOL        allowMultipleSelection;
 @property (nonatomic, assign) IBInspectable BOOL        allowNoSelection;
 
+- (NSArray <NSString *> *)selectedTitles;
+
 #if TARGET_OS_TV
 @property (nonatomic, strong) IBInspectable UIColor *textColor;
 @property (nonatomic, strong) IBInspectable UIColor *focusedTextColor;
