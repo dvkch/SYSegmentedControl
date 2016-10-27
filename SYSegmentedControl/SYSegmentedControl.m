@@ -44,7 +44,8 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     _equalWidths            = YES;
     _allowNoSelection       = NO;
     _allowMultipleSelection = YES;
-    _margin                 = (TARGET_OS_TV ? 20. : 10);
+    _marginBetweenItems     = (TARGET_OS_TV ? 20. : 0.);
+    _itemsInsets            = (TARGET_OS_TV ? UIEdgeInsetsZero : UIEdgeInsetsMake(10, 10, 10, 10));
     
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
     
@@ -99,6 +100,8 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     
     for (UIView *separator in self.separators)
         [separator setBackgroundColor:self.tintColor];
+
+    [self.layer setBorderColor:self.tintColor.CGColor];
 #endif
 }
 
@@ -278,23 +281,23 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     [self invalidateIntrinsicContentSize];
 }
 
-- (void)setMargin:(CGFloat)margin
+- (void)setMarginBetweenItems:(CGFloat)marginBetweenItems
 {
-    self->_margin = margin;
-    [self updateButtonInsetsAndMargin];
-}
-
-- (void)updateButtonInsetsAndMargin
-{
-    CGFloat insets = (TARGET_OS_TV ? 20. : self.margin);
-    CGFloat margin = (TARGET_OS_TV ? self.margin : 0.);
-    
-    for (UIButton *button in self.buttons)
-        [button setContentEdgeInsets:UIEdgeInsetsMake(insets, insets, insets, insets)];
+    self->_marginBetweenItems = marginBetweenItems;
     
     for (NSLayoutConstraint *constraint in self.marginConstraints)
-        [constraint setConstant:margin];
+        [constraint setConstant:marginBetweenItems];
     
+    [self invalidateIntrinsicContentSize];
+}
+
+- (void)setItemsInsets:(UIEdgeInsets)itemsInsets
+{
+    self->_itemsInsets = itemsInsets;
+
+    for (UIButton *button in self.buttons)
+        [button setContentEdgeInsets:itemsInsets];
+
     [self invalidateIntrinsicContentSize];
 }
 
@@ -470,7 +473,8 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     [self setBackgroundColor:self.backgroundColor];
     [self setFont:self.font];
     [self setEqualWidths:self.equalWidths];
-    [self updateButtonInsetsAndMargin];
+    [self setMarginBetweenItems:self.marginBetweenItems];
+    [self setItemsInsets:self.itemsInsets];
     
 #if TARGET_OS_TV
     [self setTextColor:self.textColor];
