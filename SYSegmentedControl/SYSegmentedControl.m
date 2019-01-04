@@ -100,7 +100,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     
     for (UIView *separator in self.separators)
         [separator setBackgroundColor:self.tintColor];
-
+    
     [self.layer setBorderColor:self.tintColor.CGColor];
 #endif
 }
@@ -178,6 +178,8 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
                           forState:UIControlStateSelected];
         [button setBackgroundImage:[UIImage sy_imageWithColor:selectedBackgroundColor]
                           forState:(UIControlStateSelected|UIControlStateFocused)];
+        [button setBackgroundImage:[UIImage sy_imageWithColor:selectedBackgroundColor]
+                          forState:(UIControlStateHighlighted|UIControlStateFocused)];
     }
 }
 #endif
@@ -294,10 +296,10 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 - (void)setItemsInsets:(UIEdgeInsets)itemsInsets
 {
     self->_itemsInsets = itemsInsets;
-
+    
     for (UIButton *button in self.buttons)
         [button setContentEdgeInsets:itemsInsets];
-
+    
     [self invalidateIntrinsicContentSize];
 }
 
