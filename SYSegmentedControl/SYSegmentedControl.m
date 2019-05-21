@@ -7,9 +7,9 @@
 //
 
 #import "SYSegmentedControl.h"
-#import "UIImage+SYKit.h"
-#import "UIView+SYKit.h"
-#import "NSLayoutConstraint+SYKit.h"
+#import <SYKit/SYKit-Swift.h>
+#import <SYKit/UIView+SYKit.h>
+#import <SYKit/NSLayoutConstraint+SYKit.h>
 
 static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 

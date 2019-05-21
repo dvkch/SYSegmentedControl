@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'SYSegmentedControl'
-  s.version  = '1.1.2'
+  s.version  = '1.1.3'
   s.license  = 'Custom, see Readme.md'
   s.summary  = 'Custom UISegmentedControl'
   s.homepage = 'https://github.com/dvkch/SYSegmentedControl'
