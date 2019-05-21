@@ -1,12 +1,16 @@
 PODS:
-  - SYKit (0.0.25)
+  - SYKit (0.0.59)
 
 DEPENDENCIES:
   - SYKit
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - SYKit
+
 SPEC CHECKSUMS:
-  SYKit: 194b1895e7a8f8d61cf36a256629594777bcab6e
+  SYKit: 03830134cc2d3d812142e2c63b75edd42cbd4efc
 
 PODFILE CHECKSUM: 9178a1259d06c500b4fd5bd08c75a4e28aca58b5
 
-COCOAPODS: 1.1.0.rc.2
+COCOAPODS: 1.6.1
