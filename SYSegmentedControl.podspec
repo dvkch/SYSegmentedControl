@@ -8,6 +8,7 @@ Pod::Spec.new do |s|
   s.source   = { :git => 'https://github.com/dvkch/SYSegmentedControl.git', :tag => s.version.to_s }
   s.source_files = 'SYSegmentedControl/SYSegmentedControl.{h,m}'
   s.requires_arc = true
+  s.swift_version = "5.0"
 
   s.xcconfig = { 'CLANG_MODULES_AUTOLINK' => 'YES' }
   s.ios.deployment_target  = '8.0'
