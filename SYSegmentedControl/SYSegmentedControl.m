@@ -8,8 +8,6 @@
 
 #import "SYSegmentedControl.h"
 #import <SYKit/SYKit-Swift.h>
-#import <SYKit/UIView+SYKit.h>
-#import <SYKit/NSLayoutConstraint+SYKit.h>
 
 static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 
@@ -90,11 +88,11 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     for (UIButton *button in self.buttons)
     {
         [button setTitleColor:tintColor forState:UIControlStateNormal];
-        [button setBackgroundImage:[UIImage sy_imageWithColor:self.tintColor]
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:self.tintColor]
                           forState:UIControlStateSelected];
-        [button setBackgroundImage:[UIImage sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.2]]
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.2]]
                           forState:UIControlStateHighlighted];
-        [button setBackgroundImage:[UIImage sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.7]]
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.7]]
                           forState:(UIControlStateHighlighted|UIControlStateSelected)];
     }
     
@@ -113,7 +111,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     [self updateSeparatorColors];
     for (UIButton *button in self.buttons)
     {
-        [button setBackgroundImage:[UIImage sy_imageWithColor:self.backgroundColor]
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:self.backgroundColor]
                           forState:UIControlStateNormal];
         
         [button setTitleColor:self.backgroundColor
@@ -150,9 +148,9 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     self->_focusedBackgroundColor = focusedBackgroundColor;
     for (UIButton *button in self.buttons)
     {
-        [button setBackgroundImage:[UIImage sy_imageWithColor:focusedBackgroundColor]
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:focusedBackgroundColor]
                           forState:UIControlStateFocused];
-        [button setBackgroundImage:[UIImage sy_imageWithColor:focusedBackgroundColor]
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:focusedBackgroundColor]
                           forState:(UIControlStateFocused|UIControlStateSelected|UIControlStateHighlighted)];
     }
 }
@@ -174,11 +172,11 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     self->_selectedBackgroundColor = selectedBackgroundColor;
     for (UIButton *button in self.buttons)
     {
-        [button setBackgroundImage:[UIImage sy_imageWithColor:selectedBackgroundColor]
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:selectedBackgroundColor]
                           forState:UIControlStateSelected];
-        [button setBackgroundImage:[UIImage sy_imageWithColor:selectedBackgroundColor]
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:selectedBackgroundColor]
                           forState:(UIControlStateSelected|UIControlStateFocused)];
-        [button setBackgroundImage:[UIImage sy_imageWithColor:selectedBackgroundColor]
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:selectedBackgroundColor]
                           forState:(UIControlStateHighlighted|UIControlStateFocused)];
     }
 }
@@ -266,9 +264,7 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
         NSMutableArray <NSLayoutConstraint *> *equalWidthsConstraints = [NSMutableArray arrayWithCapacity:self.buttons.count];
         for (NSUInteger i = 1; i < self.buttons.count; ++i)
         {
-            [equalWidthsConstraints addObject:
-             [NSLayoutConstraint sy_equalConstraintWithItems:@[self.buttons[i], self.buttons.firstObject]
-                                                   attribute:NSLayoutAttributeWidth]];
+            [equalWidthsConstraints addObject:[self.buttons.firstObject.widthAnchor constraintEqualToAnchor:self.buttons[i].widthAnchor]];
         }
         
         [self addConstraints:equalWidthsConstraints];
@@ -390,38 +386,23 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
     {
         UIButton *button = buttons[i];
         
-        [self addConstraint:
-         [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
-                                               attribute:NSLayoutAttributeTop]];
-        
-        [self addConstraint:
-         [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
-                                               attribute:NSLayoutAttributeBottom]];
+        [self addConstraint:[button.topAnchor constraintEqualToAnchor:self.topAnchor]];
+        [self addConstraint:[button.bottomAnchor constraintEqualToAnchor:self.bottomAnchor]];
         
         if (i == 0)
         {
-            [marginConstraints addObject:
-             [NSLayoutConstraint sy_equalConstraintWithItems:@[button, self]
-                                                   attribute:NSLayoutAttributeLeft]];
+            [marginConstraints addObject:[button.leftAnchor constraintEqualToAnchor:self.leftAnchor]];
         }
         else
         {
-            [marginConstraints addObject:
-             [NSLayoutConstraint sy_constraintWithItems:@[button, buttons[i-1]]
-                                             attribute1:NSLayoutAttributeLeft
-                                             attribute2:NSLayoutAttributeRight
-                                              relatedBy:NSLayoutRelationEqual
-                                                 offset:0.]];
+            [marginConstraints addObject:[button.leftAnchor constraintEqualToAnchor:buttons[i-1].rightAnchor]];
         }
         
         if (i == buttons.count - 1)
         {
-            [marginConstraints addObject:
-             [NSLayoutConstraint sy_equalConstraintWithItems:@[self, button]
-                                                   attribute:NSLayoutAttributeRight]];
+            [marginConstraints addObject:[button.rightAnchor constraintEqualToAnchor:self.rightAnchor]];
         }
     }
-    
     self.marginConstraints = [marginConstraints copy];
     [self addConstraints:marginConstraints];
     
@@ -437,26 +418,10 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
         
         [self addSubview:separator];
         
-        [self addConstraint:
-         [NSLayoutConstraint sy_equalConstraintWithItems:@[separator, self]
-                                               attribute:NSLayoutAttributeTop]];
-        [self addConstraint:
-         [NSLayoutConstraint sy_equalConstraintWithItems:@[separator, self]
-                                               attribute:NSLayoutAttributeBottom]];
-        [self addConstraint:
-         [NSLayoutConstraint sy_equalConstraintWithItems:@[separator, buttons[i]]
-                                              attribute1:NSLayoutAttributeCenterX
-                                              attribute2:NSLayoutAttributeLeft
-                                                  offset:0]];
-        
-        [separatorWidthConstraint addObject:
-         [NSLayoutConstraint constraintWithItem:separator
-                                      attribute:NSLayoutAttributeWidth
-                                      relatedBy:NSLayoutRelationEqual
-                                         toItem:nil
-                                      attribute:NSLayoutAttributeNotAnAttribute
-                                     multiplier:1.
-                                       constant:self.lineWidth]];
+        [self addConstraint:[separator.topAnchor constraintEqualToAnchor:self.topAnchor]];
+        [self addConstraint:[separator.bottomAnchor constraintEqualToAnchor:self.bottomAnchor]];
+        [self addConstraint:[separator.centerXAnchor constraintEqualToAnchor:buttons[i].leftAnchor]];
+        [separatorWidthConstraint addObject:[separator.widthAnchor constraintEqualToConstant:self.lineWidth]];
         
         [separator addConstraint:separatorWidthConstraint.lastObject];
     }

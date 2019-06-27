@@ -1,5 +1,7 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
+use_frameworks!
+
 target :'SYSegmentedControlExample-tvOS' do
 	platform :tvos, '9.0'
 	pod 'SYKit'

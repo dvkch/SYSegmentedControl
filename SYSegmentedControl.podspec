@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'SYSegmentedControl'
-  s.version  = '1.1.4'
+  s.version  = '1.1.6'
   s.license  = 'Custom, see Readme.md'
   s.summary  = 'Custom UISegmentedControl'
   s.homepage = 'https://github.com/dvkch/SYSegmentedControl'
@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.swift_version = "5.0"
 
   s.xcconfig = { 'CLANG_MODULES_AUTOLINK' => 'YES' }
-  s.ios.deployment_target  = '8.0'
+  s.ios.deployment_target  = '9.0'
   s.tvos.deployment_target = '9.0'
 
   s.dependency 'SYKit'
