@@ -83,43 +83,16 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 - (void)setTintColor:(UIColor *)tintColor
 {
     [super setTintColor:tintColor];
-#if !TARGET_TV_OS
-    [self updateSeparatorColors];
-    for (UIButton *button in self.buttons)
-    {
-        [button setTitleColor:tintColor forState:UIControlStateNormal];
-        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:self.tintColor]
-                          forState:UIControlStateSelected];
-        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.2]]
-                          forState:UIControlStateHighlighted];
-        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.7]]
-                          forState:(UIControlStateHighlighted|UIControlStateSelected)];
-    }
-    
-    for (UIView *separator in self.separators)
-        [separator setBackgroundColor:self.tintColor];
-    
     [self.layer setBorderColor:self.tintColor.CGColor];
-#endif
+    [self updateSeparatorColors];
+    [self updateButtonColors];
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
     [super setBackgroundColor:backgroundColor];
-    
-#if !TARGET_TV_OS
     [self updateSeparatorColors];
-    for (UIButton *button in self.buttons)
-    {
-        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:self.backgroundColor]
-                          forState:UIControlStateNormal];
-        
-        [button setTitleColor:self.backgroundColor
-                     forState:UIControlStateSelected];
-        [button setTitleColor:self.backgroundColor
-                     forState:(UIControlStateSelected | UIControlStateHighlighted)];
-    }
-#endif
+    [self updateButtonColors];
 }
 
 #if TARGET_OS_TV
@@ -436,7 +409,8 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
 {
     self->_buttons = buttons;
     
-    [self setTintColor:self.tintColor];
+    [self updateButtonColors];
+    [self updateSeparatorColors];
     [self setBackgroundColor:self.backgroundColor];
     [self setFont:self.font];
     [self setEqualWidths:self.equalWidths];
@@ -463,6 +437,22 @@ static NSString * const SYSegmentedControlTitlesSeparator = @"|";
         else
             [self.separators[i] setBackgroundColor:self.tintColor];
     }
+}
+
+- (void)updateButtonColors
+{
+    #if !TARGET_TV_OS
+    for (UIButton *button in self.buttons)
+    {
+        [button setTitleColor:self.tintColor forState:UIControlStateNormal];
+        [button setTitleColor:self.backgroundColor forState:UIControlStateSelected];
+        [button setTitleColor:self.backgroundColor forState:(UIControlStateSelected | UIControlStateHighlighted)];
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:self.backgroundColor] forState:UIControlStateNormal];
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:self.tintColor] forState:UIControlStateSelected];
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.2]] forState:UIControlStateHighlighted];
+        [button setBackgroundImage:[[UIImage alloc] sy_imageWithColor:[self.tintColor colorWithAlphaComponent:.7]] forState:(UIControlStateHighlighted|UIControlStateSelected)];
+    }
+    #endif
 }
 
 @end
